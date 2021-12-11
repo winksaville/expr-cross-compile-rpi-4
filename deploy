@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+# From:
+#  https://medium.com/swlh/compiling-rust-for-raspberry-pi-arm-922b55dbb050
+
+# Make bash stricter: https://kvz.io/bash-best-practices.html
+set -o errexit
+set -o nounset
+set -o pipefail
+set -o xtrace
+
+# Target parameters
+readonly TARGET_HOST=wink@rpi48
+readonly TARGET_PATH=/home/wink/bin/hw
+readonly TARGET_ARCH=aarch64-unknown-linux-gnu
+readonly SOURCE_PATH=./target/${TARGET_ARCH}/release/hw
+
+# Build
+cargo build --release --target=${TARGET_ARCH}
+
+# Deploy
+scp ${SOURCE_PATH} ${TARGET_HOST}:${TARGET_PATH}
+
+# Run
+ssh -t ${TARGET_HOST} ${TARGET_PATH}
+
